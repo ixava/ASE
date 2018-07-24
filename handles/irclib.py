@@ -28,7 +28,8 @@ class IRCHandle(ClientWrapper):
     self.logChannel = app.config['IRC'].get('log-channel', False)
     self.normalChannel = app.config['IRC'].get('normal-channel', False)
     self.adminChannel = app.config['IRC'].get('admin-channel', False)
-    self.ipdbChannel = False #'renx-admin'
+    self.ipdbChannel = app.config['IRC'].get('ipdb-channel', False)
+    self.alertsChannel = app.config['IRC'].get('alerts-channel', False)
     self.commands = Commands(app)
     super().__init__(sockcfg=app.config['IRC'], encoding='utf-8', app=app)
 
@@ -53,21 +54,22 @@ class IRCHandle(ClientWrapper):
     channel, message = ircObj.args
     channel = channel.lstrip('#')
     if message[0] != self.app.config['IRC']['cmd-sign']:
-      print('wrong cmd char')
       return
     if message.find(' ') != -1:
-      command, args = message[1:].split(' ')
+      command, args = message[1:].split(' ', 1)
     else:
       command = message[1:]
       args = []
 
     nick, s = ircObj.prefix[1:].split('!', 1)
     user, host = s.split('@', 1)
+    if isinstance(args, str):
+      args = [args]
     userDict = {'nick': nick, 'user': user, 'host': host}
     
     if command in self.commands.enabledCommands:
-      func = eval('self.commands.{}'.format(command))
-      await func(channel, userDict, args)
+      func = eval('self.commands.{}'.format(command.lower()))
+      asyncio.ensure_future(func(channel, userDict, args))
 
   async def identify(self):
     cfg = self.sockcfg
@@ -83,6 +85,8 @@ class IRCHandle(ClientWrapper):
       self.join(self.logChannel)
     if self.ipdbChannel:
       self.join(self.ipdbChannel)
+    if self.alertsChannel:
+      self.join(self.alertsChannel)
 
   def join(self, channel):
     self.inChannels.append(channel)

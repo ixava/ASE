@@ -1,6 +1,7 @@
-import asyncio, configparser
+import asyncio, configparser, time
 from handles.irclib import IRCHandle
 from handles.rconlib import RconHandle
+from lib.renx import Renx
 from lib.db import DB
 from concurrent.futures import ThreadPoolExecutor
 import aiodns
@@ -28,14 +29,19 @@ class App:
 		self.db = DB(app=self)
 		self.iopool = ThreadPoolExecutor()
 		self.dnsresolver = aiodns.DNSResolver(loop=self.loop)
+		self.renx = Renx(self)
 
 	async def runIrc(self):
 		while True:
 			await self.ircHandle.sock.run()
 
 	async def runRcon(self):
+		lastPupdate = time.time()
 		while True:
 			await self.rconHandle.sock.run()
+			if time.time() - lastPupdate > 5:
+				lastPupdate = time.time()
+				asyncio.ensure_future(self.renx.periodic_playerList_update(), loop=self.loop)
 
 	async def run(self):
 		while True:
@@ -45,7 +51,7 @@ class App:
 		try:
 			ip = ip_address(ip).reverse_pointer
 			return (await self.dnsresolver.query(ip, 'PTR'))[0]
-		except Exception as e:
+		except aiodns.error.DNSError as e:
 			return '-'
 
 

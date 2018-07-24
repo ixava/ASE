@@ -75,9 +75,8 @@ class TCPWrapper:
 
     async def run(self):
         data = await self.readLine()
-        print(data)
         if data:
-            asyncio.ensure_future(self.handle.parseMessage(data.rstrip()))
+            await self.handle.parseMessage(data.rstrip())
 
 class ClientWrapper:
     def __init__(self, app=None, sockcfg=None, **kwargs):

@@ -13,28 +13,28 @@ users = Table('users', metadata,
 	Column('hwid_id', Integer, ForeignKey('hwids.id')),
 	Column('first_seen', TIMESTAMP(), server_default=current_timestamp()),
 	Column('last_seen', TIMESTAMP(), server_default=current_timestamp()),
-	UniqueConstraint('ip_id', 'name_id', 'steamid_id', 'hwid_id',\
+	UniqueConstraint('ip_id', 'name_id', 'steamid_id', 'hwid_id', 'hostname_id',\
 		name='unique_user')
 	)
 ips = Table('ips', metadata,
 	Column('id', Integer, primary_key=True),
-	Column('ip', String(15), unique=True),
-	Column('ip_int', INTEGER(unsigned=True), unique=True),
+	Column('ip', String(15), unique=True, nullable=False),
+	Column('ip_int', INTEGER(unsigned=True), unique=True, nullable=False),
 	Column('risk', DOUBLE(), server_default='0.00')
 	)
 hostnames = Table('hostnames', metadata,
 	Column('id', Integer, primary_key=True),
-	Column('hostname', String(60), unique=True)
+	Column('hostname', String(100), unique=True, nullable=False)
 	)
 steamids = Table('steamids', metadata,
 	Column('id', Integer, primary_key=True),
-	Column('steamid', String(20), unique=True)
+	Column('steamid', String(20), unique=True, nullable=False)
 	)
 hwids = Table('hwids', metadata,
 	Column('id', Integer, primary_key=True),
-	Column('hwid', String(20), unique=True)
+	Column('hwid', String(20), unique=True, nullable=False)
 	)
 names = Table('names', metadata,
 	Column('id', Integer, primary_key=True),
-	Column('name', String(30), unique=True)
+	Column('name', String(30), unique=True, nullable=False)
 	)
