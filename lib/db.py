@@ -20,7 +20,8 @@ class DB:
                                       db=self.dbcfg['database'],
                                       host=self.dbcfg['host'],
                                       password=self.pw,
-                                      charset='utf8mb4',
+                                      charset='utf8',
+                                      use_unicode=True,
                                       loop=self.app.loop)
     
   def select_users_from_join(self):
@@ -151,7 +152,7 @@ class DB:
       return user_data
 
   def hostname_get_id(self, hostname):
-    return hostnames.select([hostnames.c.id]).where(hostnames.c.hostname == hostname)
+    return select([hostnames.c.id]).where(hostnames.c.hostname == hostname)
 
   def longIP(self, ip):
     pack = inet_aton(ip)
