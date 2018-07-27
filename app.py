@@ -59,8 +59,8 @@ class App:
 		self.loop.run_until_complete(self.ircHandle.sock.connect())
 		self.loop.run_until_complete(self.rconHandle.sock.connect())
 		self.loop.run_until_complete(self.db.connect())
-		asyncio.async(self.runIrc(), loop=self.loop)
-		asyncio.async(self.runRcon(), loop=self.loop)
+		asyncio.ensure_future(self.runIrc(), loop=self.loop)
+		asyncio.ensure_future(self.runRcon(), loop=self.loop)
 		try:
 			self.loop.run_forever()
 		except KeyboardInterrupt:

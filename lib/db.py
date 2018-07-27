@@ -22,6 +22,7 @@ class DB:
                                       password=self.pw,
                                       charset='utf8',
                                       use_unicode=True,
+									  autocommit=True,
                                       loop=self.app.loop)
     
   def select_users_from_join(self):
