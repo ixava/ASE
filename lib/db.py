@@ -138,7 +138,7 @@ class DB:
 
         if user_data['hostnames_hostname'] != user['hostname']:
           result = await conn.execute(self.hostname_get_id(user['hostname']))
-          if hostname_id.rowcount > 0:
+          if result.rowcount > 0:
             hostname_id = await result.fetchone()
             hostname_id = hostname_id['id']
           else:
